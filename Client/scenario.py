@@ -6,6 +6,7 @@ from player import Player
 from random import randint
 from monster import Monster
 import pygame
+import math
 
 class Scene:
 
@@ -17,7 +18,7 @@ class Scene:
 		self.trees = []
 		self.zombies = []
 		self.cameraPosition = [0,0]
-		self.cameraSpeed = 5
+		self.cameraSpeed = 2
 
 		# Generating trees
 		for x in range(0, 60):
@@ -25,7 +26,8 @@ class Scene:
 			rY = randint(self.bounds[1], self.bounds[3])
 			self.trees.append(Tree(rX, rY))
 
-		for x in range(0, 60):
+		# Initial Zombies
+		for x in range(0, 20):
 			rX = randint(self.bounds[0], self.bounds[2])
 			rY = randint(self.bounds[1], self.bounds[3])
 			self.zombies.append(Monster(self._resources.zombie, rX, rY))
@@ -37,7 +39,6 @@ class Scene:
 		return self._player
 
 	def movePlayer(self, direction):
-		print(self.cameraPosition[0])
 		if direction == 6:
 			if self.cameraPosition[0] < 2000 + 300:
 				self.cameraPosition[0] += self.cameraSpeed
@@ -54,10 +55,29 @@ class Scene:
 	def render(self):
 		self._player.render(self)
 		for tree in self.trees:
-			tree.render(self, self._resources.tree)
+			if self.isInRange(tree, 550, 350):
+				tree.render(self, self._resources.tree)
+
 		for zombie in self.zombies:
-			zombie.render(self)
+			if self.isInRange(zombie, 550, 350):
+				zombie.render(self)
+
 		pygame.draw.rect(self.display, (0,0,0), [-2000+self.cameraPosition[0], -2000+self.cameraPosition[1], 4000, 4000], 5)
+
+	def loop(self):
+		for zombie in self.zombies:
+			if self.isInRange(zombie , 550, 350):
+				zombie.loop(self)
+
+    # Range check if we should loop / render stuff or not
+	def isInRange(self, o2, rangeX, rangeY):
+		o1 = self._player
+		distanceX = math.fabs(o1.x - o2.x)
+		distanceY = math.fabs(o1.y - 60 - o2.y)
+		if distanceX > rangeX or distanceY > rangeY:
+			return False
+		return True
+
 
 
 

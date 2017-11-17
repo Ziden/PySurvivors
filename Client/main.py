@@ -29,6 +29,7 @@ class App:
         if pressed[pygame.K_d]: self.scene.movePlayer(4)
         if pressed[pygame.K_w]: self.scene.movePlayer(8)
         if pressed[pygame.K_s]: self.scene.movePlayer(2)
+        self.scene.loop()
 
     def on_render(self):
         self._display_surf.fill((46,155,25))

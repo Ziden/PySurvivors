@@ -9,13 +9,11 @@ class App:
         self._running = True
         self._display_surf = None
         self.size = self.weight, self.height = 800, 600 # fixed, meh
-
         
     def on_init(self):
         pygame.init()
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         pygame.display.set_caption('Survive Zombies')
-        self._display_surf.fill((46,155,25))
         self._running = True
         self.resources = Resources()
         self.scene = Scene(self.resources, self._display_surf)
@@ -24,19 +22,19 @@ class App:
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self._running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_d:
-                self.scene.getPlayer().move(6)
-            elif event.key == pygame.K_a:
-                self.scene.getPlayer().move(4)
-
+       
     def on_loop(self):
-       pass
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_a]: self.scene.movePlayer(6)
+        if pressed[pygame.K_d]: self.scene.movePlayer(4)
+        if pressed[pygame.K_w]: self.scene.movePlayer(8)
+        if pressed[pygame.K_s]: self.scene.movePlayer(2)
 
     def on_render(self):
+        self._display_surf.fill((46,155,25))
         self.scene.render()
         pygame.display.update()
-        self.clock.tick(60)
+        self.clock.tick(120)
 
     def on_cleanup(self):
         pygame.quit()

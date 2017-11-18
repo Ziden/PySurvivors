@@ -16,12 +16,16 @@ class App:
         pygame.display.set_caption('Survive Zombies')
         self._running = True
         self.resources = Resources()
-        self.scene = Scene(self.resources, self._display_surf)
+        self.scene = Scene(self.resources, self._display_surf, pygame.font.SysFont('Comic Sans MS', 30))
         self.clock = pygame.time.Clock()
+        pygame.font.init()
+
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self._running = False
+        if event.type == pygame.MOUSEBUTTONUP:
+            self.scene.playerShoot()
        
     def on_loop(self):
         pressed = pygame.key.get_pressed()
@@ -30,10 +34,14 @@ class App:
         if pressed[pygame.K_w]: self.scene.movePlayer(8)
         if pressed[pygame.K_s]: self.scene.movePlayer(2)
         self.scene.loop()
+        if self.scene.screen is not None:
+            self.scene.screen.loop(self.scene)
 
     def on_render(self):
         self._display_surf.fill((46,155,25))
         self.scene.render()
+        if self.scene.screen is not None:
+            self.scene.screen.render(self.scene)
         pygame.display.update()
         self.clock.tick(120)
 

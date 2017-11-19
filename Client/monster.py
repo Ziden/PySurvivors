@@ -1,5 +1,6 @@
 import pygame, math
 from screens import GameOverScreen
+import zombiemath
 
 class Monster:
 
@@ -8,6 +9,7 @@ class Monster:
 		self.y = y
 		self.sprite = zombieSprite
 		self.angle = 0
+		self.rect = None
 
 	def render(self, scene):
 		px = 300
@@ -17,7 +19,15 @@ class Monster:
 		self.angle = angle
 		rotimage = pygame.transform.rotate(self.sprite,angle)
 		rect = rotimage.get_rect(center=(self.x+scene.cameraPosition[0],self.y+scene.cameraPosition[1]))
+		self.rect = rect
+
+		# Debug
+		pygame.draw.rect(scene.getSurface(), (0,255,0),rect)
+
 		scene.getSurface().blit(rotimage, rect)
+
+		
+
 
 	def loop(self, scene):
 		# Move towards the player center

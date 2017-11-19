@@ -43,7 +43,7 @@ class GameOverScreen(Screen):
 		self.startTime = int(round(time.time()))
 		Screen.__init__(self, scene)
 		Screen.setBackground(self, scene.getResources().gameover)
-		print "INIT"
+
 
 	# Override
 	def render(self, scene):
@@ -59,7 +59,6 @@ class GameOverScreen(Screen):
 	def loop(self, scene):
 		Screen._loop(self, scene)
 		now = int(round(time.time()))
-		print(self.startTime)
 		self.countdownTimer = 5 - (now - self.startTime)
 		if self.countdownTimer == -1:
 			scene.generate()

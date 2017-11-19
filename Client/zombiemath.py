@@ -19,9 +19,7 @@ if sys.version_info[0] == 3:
 
 import pygame
 
-
 GEOMETRY_TYPES = RECT_TYPE, CIRCLE_TYPE, LINE_TYPE, POLY_TYPE = tuple(range(4))
-
 
 class Vec2d(object):
     __slots__ = ['x', 'y']
@@ -382,285 +380,6 @@ class Vec2d(object):
         
     def __setstate__(self, dict):
         self.x, self.y = dict
-        
-########################################################################
-# Unit Testing                                                         #
-########################################################################
-if __name__ == "__main__":
- 
-    import unittest
-    import pickle
- 
-    ####################################################################
-    class UnitTestVec2D(unittest.TestCase):
-    
-        def setUp(self):
-            pass
-        
-        def testCreationAndAccess(self):
-            v = Vec2d(111,222)
-            self.assertTrue(v.x == 111 and v.y == 222)
-            v.x = 333
-            v[1] = 444
-            self.assertTrue(v[0] == 333 and v[1] == 444)
- 
-        def testMath(self):
-            v = Vec2d(111,222)
-            self.assertEqual(v + 1, Vec2d(112,223))
-            self.assertTrue(v - 2 == [109,220])
-            self.assertTrue(v * 3 == (333,666))
-            self.assertTrue(v / 2.0 == Vec2d(55.5, 111))
-            self.assertTrue(v // 2 == (55, 111))
-            self.assertTrue(v ** Vec2d(2,3) == [12321, 10941048])
-            self.assertTrue(v + [-11, 78] == Vec2d(100, 300))
-            self.assertTrue(v // [11,2] == [10,111])
- 
-        def testReverseMath(self):
-            v = Vec2d(111,222)
-            self.assertTrue(1 + v == Vec2d(112,223))
-            self.assertTrue(2 - v == [-109,-220])
-            self.assertTrue(3 * v == (333,666))
-            self.assertTrue([222,999] // v == [2,4])
-            self.assertTrue([111,222] ** Vec2d(2,3) == [12321, 10941048])
-            self.assertTrue([-11, 78] + v == Vec2d(100, 300))
- 
-        def testUnary(self):
-            v = Vec2d(111,222)
-            v = -v
-            self.assertTrue(v == [-111,-222])
-            v = abs(v)
-            self.assertTrue(v == [111,222])
- 
-        def testLength(self):
-            v = Vec2d(3,4)
-            self.assertTrue(v.length == 5)
-            self.assertTrue(v.get_length_sqrd() == 25)
-            self.assertTrue(v.normalize_return_length() == 5)
-            self.assertTrue(v.length == 1)
-            v.length = 5
-            self.assertTrue(v == Vec2d(3,4))
-            v2 = Vec2d(10, -2)
-            self.assertTrue(v.get_distance(v2) == (v - v2).get_length())
-            
-        def testAngles(self):            
-            v = Vec2d(0, 3)
-            self.assertEqual(v.angle, 90)
-            v2 = Vec2d(v)
-            v.rotate(-90)
-            self.assertEqual(v.get_angle_between(v2), 90)
-            v2.angle -= 90
-            self.assertEqual(v.length, v2.length)
-            self.assertEqual(v2.angle, 0)
-            self.assertEqual(v2, [3, 0])
-            self.assertTrue((v - v2).length < .00001)
-            self.assertEqual(v.length, v2.length)
-            v2.rotate(300)
-            self.assertAlmostEqual(v.get_angle_between(v2), -60)
-            v2.rotate(v2.get_angle_between(v))
-            angle = v.get_angle_between(v2)
-            self.assertAlmostEqual(v.get_angle_between(v2), 0)  
- 
-        def testHighLevel(self):
-            basis0 = Vec2d(5.0, 0)
-            basis1 = Vec2d(0, .5)
-            v = Vec2d(10, 1)
-            self.assertTrue(v.convert_to_basis(basis0, basis1) == [2, 2])
-            self.assertTrue(v.projection(basis0) == (10, 0))
-            self.assertTrue(basis0.dot(basis1) == 0)
-            
-        def testCross(self):
-            lhs = Vec2d(1, .5)
-            rhs = Vec2d(4,6)
-            self.assertTrue(lhs.cross(rhs) == 4)
-            
-        def testComparison(self):
-            int_vec = Vec2d(3, -2)
-            flt_vec = Vec2d(3.0, -2.0)
-            zero_vec = Vec2d(0, 0)
-            self.assertTrue(int_vec == flt_vec)
-            self.assertTrue(int_vec != zero_vec)
-            self.assertTrue((flt_vec == zero_vec) == False)
-            self.assertTrue((flt_vec != int_vec) == False)
-            self.assertTrue(int_vec == (3, -2))
-            self.assertTrue(int_vec != [0, 0])
-            self.assertTrue(int_vec != 5)
-            self.assertTrue(int_vec != [3, -2, -5])
-        
-        def testInplace(self):
-            inplace_vec = Vec2d(5, 13)
-            inplace_ref = inplace_vec
-            inplace_src = Vec2d(inplace_vec)    
-            inplace_vec *= .5
-            inplace_vec += .5
-            inplace_vec //= (3, 6)
-            inplace_vec += Vec2d(-1, -1)
-            alternate = (inplace_src*.5 + .5)//Vec2d(3,6) + [-1, -1]
-            self.assertEqual(inplace_vec, inplace_ref)
-            self.assertEqual(inplace_vec, alternate)
-        
-        def testPickle(self):
-            testvec = Vec2d(5, .3)
-            testvec_str = pickle.dumps(testvec)
-            loaded_vec = pickle.loads(testvec_str)
-            self.assertEqual(testvec, loaded_vec)
-        
-        p = Vec2d(1,2)
-        print(p[:])
-    
-
-    unittest.main()
- 
- ######### MATH FUNCTIONS ########
-
-def calcAngles(x1, y1, x2, y2):
-	return 360-math.atan2(x1-x2,y1-y2)*180/math.pi
-
-def circle_collide_circle(a, b, rect_pre_tested=False):
-    coll = True if rect_pre_tested else None
-    if coll is None:
-        try:
-            a_rect = a.rect
-            b_rect = b.rect
-            coll = a_rect.colliderect(b_rect) == True
-        except:
-            pass
-    if coll is not False:
-        coll = circle_intersects_circle(a.origin, a.radius, b.origin, b.radius)
-    return coll
-
-
-def circle_collide_rect(a, b, rect_pre_tested=False):
-    if a.collision_type != CIRCLE_TYPE:
-        a, b = b, a
-    coll = True if rect_pre_tested else None
-    if coll is None:
-        try:
-            a_rect = a.rect
-            b_rect = b.rect
-            coll = a_rect.colliderect(b_rect) == True
-        except:
-            pass
-    if coll is not False:
-        origin = a.origin
-        rect = b.rect
-        coll = circle_intersects_rect(origin, a.radius, rect) or rect.collidepoint(a.origin)
-    return coll
-
-
-def circle_collide_line(a, b, rect_pre_tested=False):
-    if a.collision_type != CIRCLE_TYPE:
-        a, b = b, a
-    return circle_intersects_line(a.origin, a.radius, b.end_points)
-
-
-def circle_collide_poly(a, b, rect_pre_tested=False):
-    if a.collision_type != CIRCLE_TYPE:
-        a, b = b, a
-    coll = True if rect_pre_tested else None
-    if coll is None:
-        try:
-            a_rect = a.rect
-            b_rect = b.rect
-            coll = a_rect.colliderect(b_rect) == True
-        except:
-            pass
-    if coll is not False:
-        origin = a.origin
-        points = b.points
-        coll = circle_intersects_poly(origin, a.radius, points) or point_in_poly(origin, points)
-    return coll
-
-
-def rect_collide_rect(a, b, rect_pre_tested=False):
-    coll = True if rect_pre_tested else None
-    if coll is None:
-        try:
-            coll = a.rect.colliderect(b.rect) == True
-        except:
-            pass
-    return coll
-
-
-def rect_collide_line(a, b, rect_pre_tested=False):
-    if a.collision_type != RECT_TYPE:
-        a, b = b, a
-    rect = a.rect
-    end_points = b.end_points
-    collidepoint = rect.collidepoint
-    return collidepoint(end_points[0]) or len(line_intersects_rect(end_points, rect)) > 0
-           # or collidepoint(end_points[1]) == True
-
-
-def rect_collide_poly(a, b, rect_pre_tested=False):
-    if a.collision_type != RECT_TYPE:
-        a, b = b, a
-    coll = True if rect_pre_tested else None
-    if coll is None:
-        try:
-            a_rect = a.rect
-            b_rect = b.rect
-            coll = a_rect.colliderect(b_rect) == True
-        except:
-            pass
-    if coll is not False:
-        rect = a.rect
-        a_points = rect.topleft, rect.topright, rect.bottomright, rect.bottomleft
-        b_points = b.points
-        coll = points_in_poly(a_points, b_points) or points_in_poly(b_points, a_points) or \
-            lines_intersect_lines(points_to_lines(a_points), points_to_lines(b_points))
-    return coll and True
-
-
-def line_collide_line(a, b, rect_pre_tested=False):
-    return line_intersects_line(a.end_points, b.end_points)
-
-
-def line_collide_poly(a, b, rect_pre_tested=False):
-    if a.collision_type != LINE_TYPE:
-        a, b = b, a
-    end_points = a.end_points
-    points = b.points
-    return len(line_intersects_poly(end_points, points)) > 0 or points_in_poly(end_points, points)
-
-
-def poly_collide_poly(a, b, rect_pre_tested=False):
-    coll = True if rect_pre_tested else None
-    if coll is None:
-        try:
-            a_rect = a.rect
-            b_rect = b.rect
-            coll = a_rect.colliderect(b_rect) == True
-        except:
-            pass
-    if coll is not False:
-        a_points = a.points
-        b_points = b.points
-        coll = points_in_poly(a_points, b_points) or points_in_poly(b_points, a_points) or \
-            lines_intersect_lines(points_to_lines(a_points), points_to_lines(b_points))
-    return coll and True
-
-
-COLLISION_FUNCS = {
-    (CIRCLE_TYPE, CIRCLE_TYPE): circle_collide_circle,
-    (CIRCLE_TYPE, RECT_TYPE): circle_collide_rect,
-    (CIRCLE_TYPE, LINE_TYPE): circle_collide_line,
-    (CIRCLE_TYPE, POLY_TYPE): circle_collide_poly,
-
-    (RECT_TYPE, CIRCLE_TYPE): circle_collide_rect,
-    (RECT_TYPE, RECT_TYPE): rect_collide_rect,
-    (RECT_TYPE, LINE_TYPE): rect_collide_line,
-    (RECT_TYPE, POLY_TYPE): rect_collide_poly,
-
-    (LINE_TYPE, CIRCLE_TYPE): circle_collide_line,
-    (LINE_TYPE, RECT_TYPE): rect_collide_line,
-    (LINE_TYPE, LINE_TYPE): line_collide_line,
-    (LINE_TYPE, POLY_TYPE): line_collide_poly,
-
-    (POLY_TYPE, CIRCLE_TYPE): circle_collide_poly,
-    (POLY_TYPE, RECT_TYPE): rect_collide_poly,
-    (POLY_TYPE, LINE_TYPE): line_collide_poly,
-    (POLY_TYPE, POLY_TYPE): poly_collide_poly,
-}
 
 class LineGeometry(object):
     collision_type = LINE_TYPE
@@ -781,7 +500,6 @@ class LineGeometry(object):
         self._p2[1] = val
     y2 = property(gety2, sety2)
 
-
 class RectGeometry(object):
     collision_type = RECT_TYPE
     
@@ -808,143 +526,36 @@ class RectGeometry(object):
         self.rect.center = round(p.x), round(p.y)
     position = property(getposition, setposition)
 
+def calcAngles(x1, y1, x2, y2):
+	return 360-math.atan2(x1-x2,y1-y2)*180/math.pi
 
-class CircleGeometry(object):
-    collision_type = CIRCLE_TYPE
-    
-    def __init__(self, origin, radius):
-        super(CircleGeometry, self).__init__()
-        self.rect = pygame.Rect(0, 0, radius * 2, radius * 2)
-        self._position = Vec2d(0.0, 0.0)
-        self.position = origin
-    def getorigin(self):
-        return Vec2d(self._position)
-    origin = property(getorigin)
-    
-    def getradius(self):
-        return self.rect.width // 2
+def rect_collide_rect(a, b, rect_pre_tested=False):
+    coll = True if rect_pre_tested else None
+    if coll is None:
+        try:
+            coll = a.rect.colliderect(b.rect) == True
+        except:
+            pass
+    return coll
 
-    def setradius(self, val):
-        self.rect.size = Vec2d(val, val) * 2
-        self.position = self.position
-    radius = property(getradius, setradius)
-    
-    def getposition(self):
-        return self._position
+def rect_collide_line(a, b, rect_pre_tested=False):
+    if a.collision_type != RECT_TYPE:
+        a, b = b, a
+    rect = a.rect
+    end_points = b.end_points
+    collidepoint = rect.collidepoint
+    return collidepoint(end_points[0]) or len(line_intersects_rect(end_points, rect)) > 0
+           # or collidepoint(end_points[1]) == True
 
-    def setposition(self, val):
-        p = self._position
-        p.x, p.y = val
-        self.rect.center = round(p.x), round(p.y)
-    position = property(getposition, setposition)
-
-
-class PolyGeometry(object):
-    collision_type = POLY_TYPE
-    
-    def __init__(self, points, position=None):
-        super(PolyGeometry, self).__init__()
-
-        minx = reduce(min, [x for x, y in points])
-        width = reduce(max, [x for x, y in points]) - minx + 1
-        miny = reduce(min, [y for x, y in points])
-        height = reduce(max, [y for x, y in points]) - miny + 1
-        self.rect = pygame.Rect(0, 0, width, height)
-
-        self._position = Vec2d(0.0, 0.0)
-        if position is None:
-            self.position = self.rect.center
-        else:
-            self.position = position
-
-        self._points = [(x - minx, y - miny) for x, y in points]
-
-    # entity's collided, static method used by QuadTree callback
-    # collided = staticmethod(poly_collided_other)
-    
-    def getpoints(self):
-        left, top = self.rect.topleft
-        return [(left + x, top + y) for x, y in self._points]
-    points = property(getpoints)
-    
-    def getposition(self):
-        """GOTCHA: Something like "poly_geom.position.x += 1" will not do what
-        you expect. That operation does not update the rect instance variable.
-        Instead use "poly_geom.position += (1,0)".
-        """
-        return self._position
-
-    def setposition(self, val):
-        p = self._position
-        p.x, p.y = val
-        self.rect.center = round(p.x), round(p.y)
-    position = property(getposition, setposition)
-
-
-#############################################################################
-#
-#  Primitives - Common trigonometry and geometry
-#
-#############################################################################
-
-def angle_of(origin, end_point):
-    """Calculate the angle between the vector defined by end points (origin,point)
-    and the Y axis. All input and output values are in terms of pygame screen
-    space. Returns degrees as a float.
-
-    The origin argument is a sequence of two numbers representing the origin
-    point.
-
-    The point argument is a sequence of two numbers representing the end point.
-
-    The angle 0 and 360 are oriented at the top of the screen, and increase
-    clockwise.
-    """
-    x1, y1 = origin
-    x2, y2 = end_point
-    return (atan2(y2 - y1, x2 - x1) * 180.0 / pi + 90.0) % 360.0
-
+def line_collide_line(a, b, rect_pre_tested=False):
+    return line_intersects_line(a.end_points, b.end_points)
 
 def distance(a, b):
-    """Calculate the distance between points a and b. Returns distance as a float.
-
-    The a argument is a sequence representing one end point (x1,y1).
-
-    The b argument is a sequence representing the other end point (x2,y2).
-    """
     x1, y1 = a
     x2, y2 = b
     diffx = x1 - x2
     diffy = y1 - y2
     return (diffx * diffx + diffy * diffy) ** 0.5
-
-
-def interpolant_of_line(mag, p1, p2):
-    """Find the point at magnitude mag along a line."""
-    x1, y1 = p1
-    x2, y2 = p2
-    dx = (x2 - x1) * mag
-    dy = (y2 - y1) * mag
-    return x1 + dx, y1 + dy
-
-
-def point_on_circumference(center, radius, degrees_):
-    """Calculate the point on the circumference of a circle defined by center and
-    radius along the given angle. Returns a tuple (x,y).
-
-    The center argument is a representing the origin of the circle.
-
-    The radius argument is a number representing the length of the radius.
-
-    The degrees_ argument is a number representing the angle of radius from
-    origin. The angles 0 and 360 are at the top of the screen, with values
-    increasing clockwise.
-    """
-    radians_ = radians(degrees_ - 90)
-    x = center[0] + radius * cos(radians_)
-    y = center[1] + radius * sin(radians_)
-    return x, y
-
 
 def step_toward_point(p1, p2, distance):
     """Calculate the point at a given distance along the line with end points
@@ -967,107 +578,11 @@ def step_toward_point(p1, p2, distance):
     new_y = y1 + (y2 - y1) / step
     return new_x, new_y
 
-
-def points_to_lines(points):
-    """Return a list of end-point pairs assembled from a "closed" polygon's
-    points.
-    """
-    lines = []
-    ix = [i for i in range(len(points))]
-    ix.append(0)
-    for i in range(0, len(points)):
-        line = points[ix[i]], points[ix[i + 1]]
-        lines.append(line)
-    return lines
-
-
 def rect_to_lines(rect):
     """Return a list of end-point pairs assembled from a pygame.Rect's corners.
     """
     tl, tr, br, bl = rect.topleft, rect.topright, rect.bottomright, rect.bottomleft
     return [(tl, tr), (tr, br), (br, bl), (bl, tl)]
-
-def point_in_poly(point, poly):
-    n = len(poly)
-    vxj, vyj = poly[-1]
-    x, y = point
-    c = False
-    for i in range(n):
-        vxi, vyi = poly[i]
-        if ((vyi > y) is not (vyj > y) and
-                (x < (vxj - vxi) * (y - vyi) / (vyj - vyi) + vxi)):
-            c = not c
-        vxj, vyj = poly[i]
-    return c
-
-def points_in_poly(points, poly, fast=True):
-    result = []
-    result_append = result.append
-    n = len(poly)
-    for p in points:
-        x, y = p
-        vxj, vyj = poly[-1]
-        c = False
-        for i in range(n):
-            vxi, vyi = poly[i]
-            if ((vyi > y) is not (vyj > y) and
-                    (x < (vxj - vxi) * (y - vyi) / (vyj - vyi) + vxi)):
-                c = not c
-            vxj, vyj = poly[i]
-        if c:
-            if fast:
-                return p
-            else:
-                result_append(p)
-    return result
-
-def circle_intersects_circle(origin1, radius1, origin2, radius2):
-    x = origin1[0] - origin2[0]
-    y = origin1[1] - origin2[1]
-    dist = sqrt(x * x + y * y)
-    return dist <= radius1 + radius2
-
-
-def circle_intersects_line(origin, radius, line_segment):
-    A, B = Vec2d(line_segment[0]), Vec2d(line_segment[1])
-    C = Vec2d(origin)
-    AC = C - A
-    AB = B - A
-    ab2 = AB.dot(AB)
-    acab = AC.dot(AB)
-    t = acab / ab2
-    
-    if t < 0.0:
-        t = 0.0
-    elif t > 1.0:
-        t = 1.0
-    
-    P = AB * t + A
-    
-    H = P - C
-    h2 = H.dot(H)
-    r2 = radius * radius
-    
-#    return h2 <= r2
-    if h2 <= r2:
-        return P
-    else:
-        return None
-
-
-def circle_intersects_rect(origin, radius, rect):
-    for line in rect_to_lines(rect):
-        if circle_intersects_line(origin, radius, line):
-            return True
-    return False
-
-
-def circle_intersects_poly(origin, radius, points):
-    for line in points_to_lines(points):
-        if circle_intersects_line(origin, radius, line):
-            return True
-    return False
-
 
 def line_intersects_line(line_1, line_2):
     def is_on_segment(xi, yi, xj, yj, xk, yk):
@@ -1098,17 +613,15 @@ def line_intersects_line(line_1, line_2):
         (d4 == 0 and is_on_segment(Ax, Ay, Bx, By, Dx, Dy))
     )
 
-
 def lines_intersect_lines(lines1, lines2, fast=True):
     crosses = []
     for line1 in lines1:
         for line2 in lines2:
-            if line_intersects_line(line1, line2):
-                crosses.append((line1, line2))
+            if line_intersects_line(line1.end_points, line2):
+                crosses.append((line1.end_points, line2))
                 if fast:
                     return crosses
     return crosses
-
 
 def lines_point_of_intersection(line_1, line_2):
     a, b = (x1, y1), (x2, y2) = line_1
@@ -1144,134 +657,5 @@ def lines_point_of_intersection(line_1, line_2):
 
 def line_intersects_rect(line, rect, fast=True):
     rect_lines = rect_to_lines(rect)
-    return lines_intersect_lines([line], rect_lines, fast)
+    return lines_intersect_lines([line] , rect_lines, fast)
 
-
-def line_intersects_poly(line, points, fast=True):
-    poly_lines = points_to_lines(points)
-    return lines_intersect_lines([line], poly_lines, fast)
-
-
-def poly_intersects_rect(points, rect, fast=True):
-    poly_lines = points_to_lines(points)
-    rect_lines = rect_to_lines(rect)
-    return lines_intersect_lines(poly_lines, rect_lines, fast)
-
-
-def poly_intersects_poly(points1, points2, fast=True):
-    lines1 = points_to_lines(points1)
-    lines2 = points_to_lines(points2)
-    return lines_intersect_lines(lines1, lines2, fast)
-
-class Ellipse(object):
-
-    def __init__(self, origin, radius_x, radius_y):
-        self.origin = origin
-        self.radius_x = radius_x
-        self.radius_y = radius_y
-
-        self._points = None
-        self._dirty = True
-
-    @property
-    def origin(self):
-        return self._origin
-
-    @origin.setter
-    def origin(self, val):
-        self._origin = val
-        self._dirty = True
-
-    @property
-    def radius_y(self):
-        return self._radius_y
-
-    @radius_y.setter
-    def radius_y(self, val):
-        self._radius_y = val
-        self._dirty = True
-
-    @property
-    def radius_x(self):
-        """Set or get radius_x."""
-        return self._radius_x
-
-    @radius_x.setter
-    def radius_x(self, val):
-        self._radius_x = val
-        self._dirty = True
-
-    def draw(self, surface, color, arcs=360):
-        if not self._dirty:
-            points = self._points
-        else:
-            points = self.plot(arcs)
-        pygame.draw.lines(surface, color, True,
-            [(int(round(x)), int(round(y))) for x, y in points])
-
-    def plot(self, arcs=360):
-        if not self._dirty:
-            return list(self._points)
-        else:
-            circumference = []
-            arcs = int(round(arcs))
-            for n in xrange(0, arcs):
-                angle = 360.0 * n / arcs
-                x, y = self.point(angle)
-                circumference.append((x, y))
-            self._points = circumference
-            self._dirty = False
-            return circumference
-
-    def point(self, angle):
-        rad = radians(angle - 90)
-        x = self.radius_x * cos(rad)
-        y = self.radius_y * sin(rad)
-        ox, oy = self.origin
-        return x + ox, y + oy
-
-
-class Diamond(pygame.Rect):
-
-    def __init__(self, *args):
-        super(Diamond, self).__init__(*args)
-
-    @property
-    def top_center(self):
-        return self.centerx, self.top
-
-    @property
-    def right_center(self):
-        return self.right, self.centery
-
-    @property
-    def bottom_center(self):
-        return self.centerx, self.bottom
-
-    @property
-    def left_center(self):
-        return self.left, self.centery
-
-    @property
-    def side_a(self):
-        return self.top_center, self.right_center
-
-    @property
-    def side_b(self):
-        return self.right_center, self.bottom_center
-
-    @property
-    def side_c(self):
-        return self.bottom_center, self.left_center
-
-    @property
-    def side_d(self):
-        return self.left_center, self.top_center
-
-    @property
-    def corners(self):
-        return self.top_center, self.right_center, self.bottom_center, self.left_center
-
-    @property
-    def edges(self):
-        return self.side_a, self.side_b, self.side_c, self.side_d

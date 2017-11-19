@@ -24,8 +24,10 @@ class App:
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self._running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.scene.getPlayer().shooting = True
         if event.type == pygame.MOUSEBUTTONUP:
-            self.scene.playerShoot()
+           self.scene.getPlayer().shooting = False
        
     def on_loop(self):
         pressed = pygame.key.get_pressed()

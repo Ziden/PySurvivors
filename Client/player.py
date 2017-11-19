@@ -1,7 +1,14 @@
-import pygame, math
+import pygame, math, zombiemath, time
+from zombiemath import LineGeometry, line_intersects_rect
+from random import randint
+from guns import RifleShot
+from guns import Rifle
+import time
+
 
 startX = 400-55
 startY = 300-32
+
 
 class Player:
 
@@ -15,14 +22,15 @@ class Player:
 		self.y -= self.size[0]/2
 		self.angle = 0
 		self.rect = None
+		self.shooting = False
+		self.gun = Rifle()
+
+	def __shoot(self, scene):
+		self.gun._shoot(scene)
 
 	def render(self, scene):
 		self.x = 400 - scene.cameraPosition[0]
 		self.y = 300 - scene.cameraPosition[1]
-
-		# Debug
-		pygame.draw.circle(scene.getSurface(), (0,0,255), [400-55,300-32], 30)
-		#
 		pos = pygame.mouse.get_pos()
 		angle = 360-math.atan2(pos[1]-270,pos[0]-350)*180/math.pi
 		self.angle = angle
@@ -31,32 +39,10 @@ class Player:
 		self.rect = rect
 		scene.getSurface().blit(rotimage, rect)
 
-class Bullet:
-
-	def __init__(self, angle):
-		self.x = 400
-		self.y = 300
-		self.angle = math.radians(360-angle + 15)
-		angleLower = math.radians(360-angle)
-		# Calculating the starting point
-		self.x = startX + 30 * math.cos(self.angle)
-		self.y = startY + 30 * math.sin(self.angle)
-
-		self.endx = self.x + 300 * math.cos(angleLower)
-		self.endy = self.y + 300 * math.sin(angleLower)
-
 	def loop(self, scene):
-		pass
+		if(self.shooting):
+			self.__shoot(scene)
 
-	def render(self, scene):
-
-		pygame.draw.line(scene.getSurface(), (255,0,0), (self.x, self.y), (self.endx,self.endy), 2)
-
-class Line:
-
-	def __init__(self, Vector1, Vector2):
-		self.v1 = Vector1
-		self.v2 = Vector2
 
 
 

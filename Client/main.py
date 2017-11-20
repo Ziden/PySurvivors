@@ -20,7 +20,6 @@ class App:
         self.clock = pygame.time.Clock()
         pygame.font.init()
 
-
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self._running = False

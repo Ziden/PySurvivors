@@ -41,13 +41,13 @@ class Scene:
 		self.cameraSpeed = 2
 		
 		# Generating trees
-		for x in range(0, 60):
+		for x in range(0, 100):
 			rX = randint(self.bounds[0], self.bounds[2])
 			rY = randint(self.bounds[1], self.bounds[3])
 			self.trees.append(Tree(rX, rY))
 
 		# Initial Zombies
-		for x in range(0, 30):
+		for x in range(0, 1):
 			rX = randint(self.bounds[0], self.bounds[2])
 			rY = randint(self.bounds[1], self.bounds[3])
 			self.zombies.append(Zombie(self, rX, rY))
@@ -86,10 +86,7 @@ class Scene:
 				bullet.render(self)
 
 		for particle in self.particles:
-				if self.isInRange(particle, 550):
-					particle.render(self)
-				else:
-					self.particles.remove(particle)
+			particle.render(self)
 
 		for tree in self.trees:
 			if self.isInRange(tree, 550):
@@ -102,18 +99,14 @@ class Scene:
 		self._player.loop(self)		
 
 		for zombie in self.zombies:
-			if self.isInRange(zombie , 450):
-				zombie.loop(self)
-				pass
+			#if self.isInRange(zombie , 450):
+			zombie.loop(self)
 
 		for bullet in self.bullets:
 			bullet.loop(self)
 
 		for particle in self.particles:
-				if self.isInRange(particle, 550):
-					particle.loop(self)
-				else:
-					self.particles.remove(particle)
+			particle.loop(self)
 
     # Range check if we should loop / render stuff or not
 	def isInRange(self, o2, range):

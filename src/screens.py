@@ -9,28 +9,25 @@ class Screen(object):
 
 	scene = None
 
-	# Construct with a background
 	def __init__(self, scene):
 		self.background = None
 
-	# Sets background sprite
 	def setBackground(self, backgroundSprite):
 		self.background = pygame.transform.scale(backgroundSprite, (800, 600))
 
-	def render(self, scene):
-		self._render(scene)
-
-	# Render method
 	def _render(self, scene):
 		if self.background is not None:
 			scene.getSurface().blit(self.background, (0,0))
 
-	# Screen logic if needed
+	def _loop(self, scene):
+		pass
+
 	def loop(self, scene):
 		self._loop(scene)
 
-	def _loop(self, scene):
-		pass
+	def render(self, scene):
+		self._render(scene)
+
 
 ###########
 # SCREENS *

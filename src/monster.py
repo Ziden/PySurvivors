@@ -16,9 +16,15 @@ class Monster:
 		self.rect = None
 		self.hp = 10
 
-	def _hit(self, scene):
+	def _hit(self, scene, bullet):
 		# Standard Hit Animation
-		if(random.choice([True, False])):
+
+		angleToPlayer = scene.getPlayer().getAngleToObject(self.y, self.x)
+
+		shotDifference = bullet.angle - angleToPlayer
+		print shotDifference
+		print "--------------"
+		if(shotDifference > 0):
 			self.angle += 25
 		else:
 			self.angle -= 25
@@ -26,6 +32,12 @@ class Monster:
 	def _render(self, scene):
 		self.rect = self.drawSprite.get_rect(center=(self.x+scene.cameraPosition[0],self.y+scene.cameraPosition[1]))
 		scene.getSurface().blit(self.drawSprite, self.rect)
+		angleToPlayer = scene.getPlayer().angleToObject(self.x, self.y)
+		angleMiddle = math.radians(360-angleToPlayer + 15)
+		x = self.x + 300 * math.cos(angleMiddle)
+		y = self.y + 300 * math.sin(angleMiddle)
+		pygame.draw.line(scene.getSurface(), (255,100,0), (self.x+scene.cameraPosition[0], self.y+scene.cameraPosition[1]), (x+scene.cameraPosition[0], y+scene.cameraPosition[0]), 3)
+		pygame.draw.circle(scene.getSurface(), (255, 255, 0), (int(self.x+scene.cameraPosition[0]), int(self.y+scene.cameraPosition[1])), 5)
 
 	def _loop(self, scene):
 		# Adjusting angle
@@ -36,14 +48,17 @@ class Monster:
 			angleDifference =   360 - self.angle - self.desiredAngle
 		self.angle = self.angle + angleDifference / 10
 
+	def screencoordinates(self):
+		return (self.x+scene.cameraPosition[0],self.y+scene.cameraPosition[1])
+
 
 class Zombie(Monster):
 
 	def __init__(self, scene, x, y):
 		Monster.__init__(self, scene.getResources().zombie, x, y)
 
-	def hit(self, scene):
-		self._hit(scene)
+	def hit(self, scene, bullet):
+		self._hit(scene, bullet)
 		hitX = int(self.x + scene.cameraPosition[0])
 		hitY = int(self.y + scene.cameraPosition[1])
 		# Hit zombie particles

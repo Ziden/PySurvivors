@@ -24,7 +24,6 @@ class Scene:
 		self.display = display
 		self.bounds = (-2000, -2000, 2000, 2000)
 		self.font = gameFont
-		
 		self.generate()
 
 	def generate(self):

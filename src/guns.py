@@ -5,6 +5,10 @@ from particle import GunshotParticle
 import time
 import player
 
+#################
+# UPPER CLASSES #
+#################
+
 class Gun:
 
 	def __init__(self):
@@ -15,7 +19,7 @@ class Gun:
 		self.angle = 0
 		self.shotCooldown = 90
 		self.lastShot = time.time() * 1000 + self.shotCooldown
-		self.angleVariation = 5
+		self.angleVariation = 5 # Makes it more cooler
 
 	def _shoot(self, scene):
 		now = time.time() * 1000
@@ -29,33 +33,18 @@ class Gun:
 	def shoot(self, scene):
 		pass
 
-
-class Rifle(Gun):
-
-	def __init__(self):
-		Gun.__init__(self)
-		self.name = "Rifle"
-		self.damage = 3
-		self.ammo = 10
-		self.bullet = "RifleShot" # The class name
-		self.angleVariation = 5
-		self.shotCooldown = 110
-
-	def shoot(self, scene):
-		Gun._shoot(self, scene)
-
-
 class Bullet:
 
 	def __init__(self, angle, distance = 300):
 		self.x = 400
 		self.y = 300
 		# Fixin the gun aim
-		self.angle = math.radians(360-angle + 15)
+		self.angle = angle
+		angleMiddle = math.radians(360-angle + 15)
 		angleLower = math.radians(360-angle)
 		# Calculating the starting point
-		self.x = player.startX + 30 * math.cos(self.angle)
-		self.y = player.startY + 30 * math.sin(self.angle)
+		self.x = player.startX + 30 * math.cos(angleMiddle)
+		self.y = player.startY + 30 * math.sin(angleMiddle)
 		# Calculating end point
 		self.endx = self.x + distance * math.cos(angleLower)
 		self.endy = self.y + distance * math.sin(angleLower)
@@ -80,7 +69,7 @@ class Bullet:
 
 		if len(self.hits) > 0:
 			for hit in self.hits:
-				hit.hit(scene)
+				hit.hit(scene, self)
 				self.hits.remove(hit)
 				break
 
@@ -98,7 +87,23 @@ class Bullet:
 	def _render(self, scene):
 		pygame.draw.line(scene.getSurface(), (255,randint(0,10),0), (self.x, self.y), (self.endx,self.endy), 1)
 
+#########
+# RIFLE #
+#########
 
+class Rifle(Gun):
+
+	def __init__(self):
+		Gun.__init__(self)
+		self.name = "Rifle"
+		self.damage = 3
+		self.ammo = 10
+		self.bullet = "RifleShot" # The class name
+		self.angleVariation = 5
+		self.shotCooldown = 110
+
+	def shoot(self, scene):
+		Gun._shoot(self, scene)
 
 class RifleShot(Bullet):
 

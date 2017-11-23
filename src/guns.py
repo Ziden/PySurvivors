@@ -40,8 +40,8 @@ class Bullet:
 		self.y = 300
 		# Fixin the gun aim
 		self.angle = angle
-		angleMiddle = math.radians(360-angle + 15)
-		angleLower = math.radians(360-angle)
+		angleMiddle = math.radians(angle + 15)
+		angleLower = math.radians(angle)
 		# Calculating the starting point
 		self.x = player.startX + 30 * math.cos(angleMiddle)
 		self.y = player.startY + 30 * math.sin(angleMiddle)
@@ -74,12 +74,10 @@ class Bullet:
 				break
 
 	def _loop(self, scene):
-
 		# Only check bullet hits first frame
 		if not self.collided:
 			self.collided = True
 			self.checkHits(scene)
-
 		now = time.time() * 1000
 		if now > self.millis:
 			scene.bullets.remove(self)
@@ -99,7 +97,7 @@ class Rifle(Gun):
 		self.damage = 3
 		self.ammo = 10
 		self.bullet = "RifleShot" # The class name
-		self.angleVariation = 5
+		self.angleVariation = 4
 		self.shotCooldown = 110
 
 	def shoot(self, scene):
@@ -112,18 +110,18 @@ class RifleShot(Bullet):
 		# Comin ou the rifle
 		self.splatter = [[
 			 # Right angled boom
-			 self.x + 15 * math.cos(math.radians(360-angle+35)),
-			 self.y + 15 * math.sin(math.radians(360-angle+35))
+			 self.x + 15 * math.cos(math.radians(angle+35)),
+			 self.y + 15 * math.sin(math.radians(angle+35))
 		],[
 		    # Left angled boom
-			self.x + 15 * math.cos(math.radians(360-angle-35)),
-			self.y + 15 * math.sin(math.radians(360-angle-35))
+			self.x + 15 * math.cos(math.radians(angle-35)),
+			self.y + 15 * math.sin(math.radians(angle-35))
 		],[
 		    # Center angled boom
-			self.x + 15 * math.cos(math.radians(360-angle)),
-			self.y + 15 * math.sin(math.radians(360-angle))
+			self.x + 15 * math.cos(math.radians(angle)),
+			self.y + 15 * math.sin(math.radians(angle))
 		]]
-		
+
 	def loop(self, scene):
 		Bullet._loop(self, scene)
 

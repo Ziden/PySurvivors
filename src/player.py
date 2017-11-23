@@ -27,14 +27,15 @@ class Player:
 		self.gun._shoot(scene)
 
 	def getAngleToObject(self, x, y):
-   		return 360-math.atan2(y-270,x-350)*180/math.pi
+   		return math.atan2(y-270,x-350)*180/math.pi
 
 	def render(self, scene):
 		self.x = 400 - scene.cameraPosition[0]
 		self.y = 300 - scene.cameraPosition[1]
 		pos = pygame.mouse.get_pos()
 		self.angle = self.getAngleToObject(pos[0], pos[1])
-		rotimage = pygame.transform.rotate(self.sprite,self.angle)
+		
+		rotimage = pygame.transform.rotate(self.sprite,360-self.angle)
 		self.rect = rotimage.get_rect(center=(400-55,300-32))
 		scene.getSurface().blit(rotimage, self.rect)
 

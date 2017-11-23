@@ -46,7 +46,7 @@ class Scene:
 			self.trees.append(Tree(rX, rY))
 
 		# Initial Zombies
-		for x in range(0, 1):
+		for x in range(0, 30):
 			rX = randint(self.bounds[0], self.bounds[2])
 			rY = randint(self.bounds[1], self.bounds[3])
 			self.zombies.append(Zombie(self, rX, rY))
@@ -98,8 +98,8 @@ class Scene:
 		self._player.loop(self)		
 
 		for zombie in self.zombies:
-			#if self.isInRange(zombie , 450):
-			zombie.loop(self)
+			if self.isInRange(zombie , 450):
+				zombie.loop(self)
 
 		for bullet in self.bullets:
 			bullet.loop(self)
